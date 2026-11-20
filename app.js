@@ -8,6 +8,7 @@ const GRADE = {
   critique: { pts: 0, label: "Erreur à risque pour le patient" }
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ATT_COLOR = "#0f766e";
 const track = n => window.bscAnalytics && window.bscAnalytics.track(n);
 
 const state = { queue: [], qi: 0, ii: 0, answers: {}, order: {}, started: false };
@@ -216,11 +217,13 @@ function moduleEnd() {
     <div class="actions">
       <button class="btn ghost" id="home">Accueil</button>
       <button class="btn ghost" id="print">Imprimer le bilan</button>
+      <button class="btn ghost" id="attest">Mon attestation</button>
       ${hasNext ? `<button class="btn" id="cont">Module suivant</button>` : state.queue.length > 1 ? `<button class="btn" id="final">Bilan du parcours</button>` : ""}
     </div>
   </section>`, "home");
   document.getElementById("home").addEventListener("click", home);
   document.getElementById("print").addEventListener("click", () => window.print());
+  document.getElementById("attest").addEventListener("click", () => window.SGAttestation?.open({ jeu: "Bloc sous contrôle", module: `module ${m.id} : ${m.title}`, code: "BSC", color: ATT_COLOR, ratio: r.pts / r.max, critical: r.crit }));
   if (hasNext) document.getElementById("cont").addEventListener("click", () => { state.qi++; state.ii = 0; track(`Module ${curMod().id} démarré`); renderItem(); });
   const f = document.getElementById("final"); if (f) f.addEventListener("click", finalEnd);
 }
@@ -238,11 +241,12 @@ function finalEnd() {
     <div class="score"><span class="big">${pct} %</span><span>${pts} points sur ${max} · ${crit} erreur${crit > 1 ? "s" : ""} à risque</span></div>
     <div class="bars">${rows}</div>
     <p>${msg}</p>
-    <p class="note">Ce bilan est un outil pédagogique : ce n'est ni une évaluation des compétences ni une attestation de formation.</p>
-    <div class="actions"><button class="btn ghost" id="print">Imprimer</button><button class="btn" id="home">Retour à l'accueil</button></div>
+    <p class="note">Ce bilan est un outil pédagogique : ce n'est pas une évaluation des compétences.</p>
+    <div class="actions"><button class="btn ghost" id="print">Imprimer</button><button class="btn" id="attest">Obtenir mon attestation</button><button class="btn" id="home">Retour à l'accueil</button></div>
   </section>`, "home");
   document.getElementById("home").addEventListener("click", home);
   document.getElementById("print").addEventListener("click", () => window.print());
+  document.getElementById("attest").addEventListener("click", () => window.SGAttestation?.open({ jeu: "Bloc sous contrôle", module: "parcours complet des 3 modules", code: "BSC", color: ATT_COLOR, ratio: pts / max, critical: crit }));
 }
 
 /* Pages annexes */
@@ -300,7 +304,7 @@ function guide() {
     <h2>Points de vigilance</h2>
     <ul class="list">
       <li>Les conduites en cas d'alarme dépendent de la procédure de l'établissement : adapter le débriefing à la vôtre.</li>
-      <li>Le score n'est ni une évaluation individuelle ni une attestation de formation.</li>
+      <li>Le score n'est pas une évaluation individuelle. L'attestation de fin de module ou de parcours indique seulement le palier atteint (seuil de réussite : 80 %, sans erreur à risque).</li>
       <li>Aucune donnée personnelle n'est collectée ; la mesure d'audience, sur le site public, est agrégée et sans cookie.</li>
     </ul>
   </section>`, "guide");

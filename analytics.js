@@ -1,7 +1,7 @@
 /* Schéma fermé : aucun texte libre, score, réponse ou identifiant d'apprenant.
    Ce fichier doit précéder l'initialisation de Plausible. */
 (() => {
-  const allowed=/^(pageview|engagement|Bloc sous contrôle · (Jeu démarré|Parcours terminé|Module [1-3] (démarré|terminé)))$/;
+  const allowed=/^(pageview|engagement|Attestation · (Participation|Réussite|Excellence)|Bloc sous contrôle · (Jeu démarré|Parcours terminé|Module [1-3] (démarré|terminé)))$/;
   window.bscAnalytics={
     transformRequest(payload){
       if(!allowed.test(payload.n))return null;
