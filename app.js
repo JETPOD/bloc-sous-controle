@@ -234,7 +234,14 @@ function finalEnd() {
   const rows = M.map(m => { const r = modResult(m); pts += r.pts; max += r.max; crit += r.crit; const p = Math.round(100 * r.pts / r.max);
     return `<div class="bar"><span class="lbl">${m.id}. ${esc(m.short)}</span><span class="track"><span style="width:${p}%"></span></span><span class="pct">${p} %</span></div>`; }).join("");
   const pct = Math.round(100 * pts / max);
-  const msg = crit ? "Des erreurs à risque ont été relevées : à reprendre en débriefing avant toute autre chose." : pct >= 85 ? "Très bonne maîtrise des comportements et des conditions de l'environnement maîtrisé." : "Bases acquises ; les points à revoir sont listés dans chaque bilan de module.";
+  const ratio = pts / max;
+  const msg = crit
+    ? "Des erreurs à risque ont été relevées : à reprendre en débriefing avant toute autre chose."
+    : ratio >= 0.95
+      ? "Très bonne réussite du parcours proposé."
+      : ratio >= 0.8
+        ? "Parcours réussi : certains points peuvent encore être consolidés."
+        : "Parcours à consolider : les points à revoir figurent dans les bilans des modules.";
   show(`<section class="card">
     <span class="chip">Bilan du parcours</span>
     <h1 style="margin-top:.8rem">Bloc sous contrôle</h1>
@@ -246,7 +253,7 @@ function finalEnd() {
   </section>`, "home");
   document.getElementById("home").addEventListener("click", home);
   document.getElementById("print").addEventListener("click", () => window.print());
-  document.getElementById("attest").addEventListener("click", () => window.SGAttestation?.open({ jeu: "Bloc sous contrôle", module: "parcours complet des 3 modules", code: "BSC", color: ATT_COLOR, ratio: pts / max, critical: crit }));
+  document.getElementById("attest").addEventListener("click", () => window.SGAttestation?.open({ jeu: "Bloc sous contrôle", module: "parcours complet des 3 modules", code: "BSC", color: ATT_COLOR, ratio, critical: crit }));
 }
 
 /* Pages annexes */
